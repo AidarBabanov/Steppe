@@ -7,6 +7,6 @@ Project is going to be a web application. Implementaion is going to be done by J
 
 ######Steps: 
 1. Servers creation and connection
-  a) Database creation and connection [done]
-  b) Servlet creation and coonection
+  [x] Database creation and connection
+  [ ] Servlet creation and coonection
 2. Logic creation [in plans]
