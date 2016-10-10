@@ -5,7 +5,7 @@ This project is a copy of ["Google Maps Smarty Pins"](https://smartypins.withgoo
 
 Project is going to be a web application and done using Java. Database is mySQL database.
 
-##Steps: 
+######Steps: 
 1. Servers creation and connection
   a) Database creation and connection [done]
   b) Servlet creation and coonection
