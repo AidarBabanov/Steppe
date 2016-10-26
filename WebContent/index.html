@@ -1,0 +1,260 @@
+<html>
+    <head>
+       
+        
+        <link rel="stylesheet" href="materialize/sass/materialize.scss" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" />
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="materialize/js/jquery-3.1.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="animate.css">
+    </head>
+
+    <body id = "main">
+        <div id="map"></div>
+        <script type="text/javascript">
+            
+            var MAINQUESTION = {
+                lat: 48.63290858589534,
+                lng: 76.376953125,
+                question: "Where to find Astana?",
+                description: "The capital city of the Kazakhstan.",
+                name:"Astana",
+                photo:""
+            };
+            //MAP INSTALLATION
+            var map;
+            var markers = [];
+            var marker;
+            var flightPaths = [];
+            var rightAnswer = {lat: MAINQUESTION.lat, lng: MAINQUESTION.lng};
+            function initMap() {
+                var $map = $('#map');
+                map = new window.google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 43.8484643239424, lng: 69.77733769531256},
+                    zoom: 5,
+                    minZoom: 5,
+                    draggable: false
+                });
+                //North East: 55.705073707012474 92.72655644531255 South West: 36.24816426657377 36.82811894531255    
+                
+                $( "#map" ).mousemove(function( event ) {
+                    
+                });
+                
+                function wheelEvent( event ) {
+                    if (map.getZoom() == 5){
+                        map.setOptions({center: {lat: 46.8484643239424, lng: 64.77733769531256}, draggable: false});
+                    }else{
+                        map.setOptions({draggable: true});
+                    }
+                }
+                
+                $map[0].addEventListener( 'mousewheel', wheelEvent, true );
+                $map[0].addEventListener( 'DOMMouseScroll', wheelEvent, true );
+                
+                
+                map.addListener('click', function(e){
+                            
+                            marker = new google.maps.Marker({
+                                    position: e.latLng,
+                                    draggable: true,
+                                    map: map,
+                                    animation: google.maps.Animation.DROP,
+                                    title: 'Hello World!'
+                            });
+                            console.log(e.latLng.lat() + " " + e.latLng.lng());
+                            deleteMarker();
+                            marker.addListener('click', toggleBounce);
+                            markers.push(marker);
+                            
+                            	
+                            //console.log(markers);
+                });
+                
+                $("#confirm").click(function(){
+                    if (markers.length == 0){
+                        alert("You should put the marker on the map!!!");
+                    }else{
+                    	$("#confirm").prop('disabled', true);
+                        deletePath();
+                        var flightPlanCoordinates = [
+                            markers[0].position,
+                            rightAnswer// answer point
+                        ];
+                        var flightPath = new google.maps.Polyline({
+                            path: flightPlanCoordinates,
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 1.0,
+                            strokeWeight: 2
+                        });
+                        flightPath.setMap(map);
+                        flightPaths.push(flightPath);
+                        calculatePoints();
+                        showDiscription();
+                    }
+                });
+                $("#skip").click(function(){
+                	changeQuestion();
+                });
+                function calculatePoints(){}
+                
+                function toggleBounce() {
+                    if (marker.getAnimation() !== null) {
+                        marker.setAnimation(null);
+                    } else {
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                    }
+                }
+            }
+            
+            
+            function deletePath(){
+                if (flightPaths.length > 0){
+                            flightPaths[0].setMap(null);
+                            flightPaths.pop();
+                }
+            }
+            function deleteMarker(){
+                if (markers.length > 0){
+                                markers[0].setMap(null);
+                                markers.pop();
+                            }
+            }
+            
+            
+            function showDiscription(p){var projection = map.getProjection();
+                        var numTiles = 1 << map.getZoom();
+                        var worldCoordinate = map.getProjection().fromLatLngToPoint(new google.maps.LatLng(rightAnswer));
+                        var pixelCoordinate = new google.maps.Point(
+                            worldCoordinate.x * numTiles,
+                            worldCoordinate.y * numTiles);
+
+                        var topLeft = new google.maps.LatLng(map.getBounds().getNorthEast().lat(),map.getBounds().getSouthWest().lng());
+                        var topLeftWorldCoordinate = projection.fromLatLngToPoint(topLeft);
+                        var topLeftPixelCoordinate = new google.maps.Point(
+                            topLeftWorldCoordinate.x * numTiles,
+                            topLeftWorldCoordinate.y * numTiles);
+                        
+                        var p = new google.maps.Point(
+                            pixelCoordinate.x - topLeftPixelCoordinate.x,
+                            pixelCoordinate.y - topLeftPixelCoordinate.y);
+                        
+                        console.log(p.x + " " + p.y);
+                        $("body").append("<div id = 'description' class = 'card'> " + MAINQUESTION.description + " </div>");
+                        var new_x = (p.x);
+                        var new_y = (p.y - 10);
+                        $( "#description" ).css( "top", "" + new_y);
+                        $( "#description" ).css( "left", "" + new_x);
+                        $( "#description" ).append("<button id = 'ok' class = 'waves-effect waves-teal btn-flat'>ok</button>");
+                        $('#description').addClass('animated bounceInDown');
+                        
+                        $( "#ok" ).click(function(){
+                        	 $('#confirm').prop('disabled', false);
+                        	deleteDescription();
+                        });
+            }
+            
+            function deleteDescription(){
+                deletePath();
+                deleteMarker();
+                changeQuestion();
+                $("#description").addClass('animated bounceOutLeft').queue(function() {setTimeout(function() {
+                                                    $("#description").remove();
+                                                    }, 2000);
+                                                });
+            }
+            
+            function changeQuestion(){
+                //SOME AJAX FUNCTION
+                 $.post("ServletConnection", {skip:" "}, function(d){
+               			var items = $.parseJSON(d);
+               			
+               			rightAnswer.lat = parseFloat(items[0]);
+               			rightAnswer.lng = parseFloat(items[1]);
+               			MAINQUESTION.lat = parseFloat(items[0]);
+               			MAINQUESTION.lng = parseFloat(items[1]);
+               			MAINQUESTION.question = items[2];
+               			MAINQUESTION.description = items[3];
+               			MAINQUESTION.name = items[4];
+               			MAINQUESTION.photo = items[5];
+               			$("#DB_Question").html(MAINQUESTION.question);
+               			
+               		 });
+                
+            }
+            
+        </script>    
+        
+         <script async defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwaSmtw0eBzLWsyu9rMjRBACXmqNGBg8E&callback=initMap">
+        </script>
+        
+        <ul id="scores" class="card collection z-depth-1 ui-widget-content">         
+            <li class = "collection-item orange accent-1"><p>Total Scores : </p><p id = "TotalScore"></p></li>
+            <li class = "collection-item orange accent-1"><p>Recent Score : </p><p id = "LastScore"></p></li>
+            <li class = "collection-item orange accent-1">
+<!--                    s<button id = "Hint" class = "dropdown-button btn" data-activates='dropdown1'> HINT </button>-->
+                    <div class="dropdown">
+                            <span>Mouse over me</span>
+                            <div class="dropdown-content">
+                                <p>sadsdsla;da;sl</p>
+                            </div>
+                    </div>
+            </li>
+            
+            
+        </ul>
+        
+        <div id = "question" class="card orange accent-1 ui-widget-content">
+            <p id = "DB_Question"></p>
+            <button id = "skip" class = "btn">Skip</button>
+            <button id = "confirm" class = "btn">Confirm</button>
+        </div>
+        
+        <script>
+            $("#scores").draggable();
+            
+            $("map").addClass('animated bounceInRight');
+            $("#question").addClass('animated bounceInDown');
+            $("#DB_Question").html(MAINQUESTION.question);
+            
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

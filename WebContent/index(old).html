@@ -1,0 +1,173 @@
+<html>
+    <head>
+       
+        
+        <link rel="stylesheet" href="materialize/sass/materialize.scss" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" />
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="materialize/js/jquery-3.1.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="main.css">
+    </head>
+
+    <body id = "main">
+        <div id="map"></div>
+        <script type="text/javascript">
+            var map;
+            var  markers = [];
+            var  marker;
+            function initMap() {
+                var $map = $('#map');
+                map = new window.google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 46.8484643239424, lng: 64.77733769531256},
+                    zoom: 5,
+                    minZoom: 5,
+                    draggable: false
+                });
+                //North East: 55.705073707012474 92.72655644531255 South West: 36.24816426657377 36.82811894531255    
+                
+                $( "#map" ).mousemove(function( event ) {
+                    
+                });
+                
+                function wheelEvent( event ) {
+                    if (map.getZoom() == 5){
+                        map.setOptions({center: {lat: 46.8484643239424, lng: 64.77733769531256}, draggable: false});
+                    }else{
+                        map.setOptions({draggable: true});
+                    }
+                }
+                
+                $map[0].addEventListener( 'mousewheel', wheelEvent, true );
+                $map[0].addEventListener( 'DOMMouseScroll', wheelEvent, true );
+                
+                
+                map.addListener('click', function(e){
+                            console.log("latitude: " + e.latLng.lat() + "\nlongitude: " + e.latLng.lng()); 
+                            
+                        marker = new google.maps.Marker({
+                                    position: e.latLng,
+                                    draggable: true,
+                                    map: map,
+                                    animation: google.maps.Animation.DROP,
+                                    title: 'Hello World!'
+                            });
+                            
+                            if (markers.length > 0){
+                                markers[0].setMap(null);
+                                markers.pop();
+                            }
+                            
+                            marker.addListener('click', toggleBounce);
+                            markers.push(marker);
+                            //console.log(markers);
+                });
+                
+                $("#confirm").click(function(){
+                    if (markers.length == 0){
+                        alert("You should put the marker on the map!!!");
+                    }else{
+                        var flightPlanCoordinates = [
+                            markers[0].position,
+                            {lat: 48.63290858589534, lng: 76.376953125}// answer point
+                        ];
+                        var flightPath = new google.maps.Polyline({
+                            path: flightPlanCoordinates,
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 1.0,
+                            strokeWeight: 2
+                        });
+                        flightPath.setMap(map);
+                    }
+                });
+                
+                $("#skip").click(function(){
+                	console.log("Getting Question...");
+               		 $.post("ServletConnection", {skip:" "}, function(d){
+               			$("#DB_Question").text(d);
+               		 });
+     				
+                });
+                
+                function toggleBounce() {
+                    if (marker.getAnimation() !== null) {
+                        marker.setAnimation(null);
+                    } else {
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                    }
+                }
+            }
+            
+            
+        </script>    
+        
+         <script async defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwaSmtw0eBzLWsyu9rMjRBACXmqNGBg8E&callback=initMap">
+        </script>
+        
+        <ul id="scores" class="card collection z-depth-1 ui-widget-content">         
+            <li class = "collection-item orange accent-1"><p>Total Scores : </p><p id = "TotalScore"></p></li>
+            <li class = "collection-item orange accent-1"><p>Recent Score : </p><p id = "LastScore"></p></li>
+            <li class = "collection-item orange accent-1">
+<!--                    s<button id = "Hint" class = "dropdown-button btn" data-activates='dropdown1'> HINT </button>-->
+                    <div class="dropdown">
+                            <input type="text" id="nameInput">
+
+							<button id="send_message">Enter!</button>
+
+                            <div class="dropdown-content">
+                                <p>sadsdsla;da;sl</p>
+                            </div>
+                    </div>
+            </li>
+            
+            
+        </ul>
+        
+        <div id = "question" class="card orange accent-1 ui-widget-content">
+            <p id = "DB_Question">Where can i find Aqtobe? And Where I can find Oskemen?</p>
+            <button id = "skip" class = "btn">Skip</button>
+            <button id = "confirm" class = "btn">Confirm</button>
+        </div>
+        
+        <script>
+            $("#scores").draggable();
+            $("#question").draggable();
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
