@@ -3,7 +3,7 @@ Nazarbayev University, Software Engineering Project
 
 Authors: Aidar Babanov, Serik Zhilibayev, Alisher Uteshev
 
-This project is a copy of ["Google Maps Smarty Pins"](https://smartypins.withgoogle.com/) game. Idea of the project is that game will ask a question where an answer should be a place on a Kazakhstan map. Player should guess and choose closest place on a map. 
+This project is a copy of ["Google Maps Smarty Pins"](https://smartypins.withgoogle.com/) game. Idea of the project is that game will ask a question where an answer should be a place on a Kazakhstan map. Player should guess and choose closest place on the map. 
 
 Project is going to be a web application. Implementaion is going to be done by Java. Database is mySQL database.
 
