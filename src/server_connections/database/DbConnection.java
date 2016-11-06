@@ -21,14 +21,14 @@ public class DbConnection {
 
 	public List<String> getQuestion() {
 		List<String> result = new ArrayList<String>();
-
 		ResultSet rs = null;
-
+		
 		try {
+			
 			st = con.createStatement();
-
+			
 			rs = st.executeQuery(
-					"Select p.idPlaces, p.latitude, p.longitude, p.name, p.description, p.photo, q.idQuestions, q.question from place as p join question as q on p.idPlaces=q.idPlaces order by rand() limit 1;  ");
+					"Select p.idPlace, p.latitude, p.longitude, p.name, p.description, p.photo, q.idQuestion, q.question from place as p join question as q on p.idPlace=q.idPlace order by rand() limit 1;  ");
 			while (rs.next()) {
 				result.add(rs.getString("latitude"));
 				result.add(rs.getString("longitude"));
@@ -36,15 +36,14 @@ public class DbConnection {
 				result.add(rs.getString("description"));
 				result.add(rs.getString("name"));
 				result.add(rs.getString("photo"));
-
-				result.add(rs.getString("idPlaces"));
-				result.add(rs.getString("idQuestions"));
+				result.add(rs.getString("idPlace"));
+				result.add(rs.getString("idQuestion"));
 				
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
 		}
-
+		
 		return result;
 	}
 
