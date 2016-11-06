@@ -46,10 +46,8 @@ public class ServletConnection extends HttpServlet {
 	    	PrintWriter out = response.getWriter();
 	    	List<String> result;
 	    	result = db.getQuestion();
-	    	//System.out.println(result);
 			Gson gson = new Gson();
 			String json = gson.toJson(result);
-			
 			response.getWriter().append(json);
 	    }
 
