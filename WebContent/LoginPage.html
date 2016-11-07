@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<link rel="stylesheet" href="materialize/sass/materialize.scss" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" />
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="materialize/js/jquery-3.1.1.js"></script>
+        
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="animate.css">
+		
+	</head>
+	
+	<body>
+		
+		<div class="form">
+				<div id = "errorMessages">
+				</div>
+<!--
+			#{if error}
+				<div class="error-message">
+					${error}
+				</div>
+			#{/if}
+-->
+				<input type="username" id="username" placeholder="Enter username"/> <br/>
+				<input type="password" id="password" placeholder="Enter password"/><br/>
+				
+				<button id = "login"> submit </button>
+				
+				<a href="@{Application.registrationPage}">Register</a>
+		
+		</div>
+			
+		<script>
+			//console.log($.session.get("aidar.babanov"));
+			
+			$("#login").click(function(){
+					
+					var username = $("#username").val();
+					if (username == ""){
+						$("#errorMessages").html("Please Enter Username");
+						return;
+					}
+					var password = $("#password").val();
+					if (password == ""){
+						$("#errorMessages").html("Please Enter Password");
+						return;
+					}
+					
+					var message = username + " " + password;
+                    console.log(message);
+					$.ajax({
+						
+                        method :  "post",
+                        url  :  "ServletConnection",
+                        data: {signin: message},		
+                        success: function(data){
+		    				console.log(data);
+		    				$_SESSION[username]=password;
+                            
+		    				$("#errorMessages").html(data);
+                            
+		    				 
+		    				console.log($_SESSION[username]);
+                        }
+		    			
+					});
+			
+			});
+	
+					
+		</script>
+	</body>
+
+</html>

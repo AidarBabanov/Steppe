@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="materialize/sass/materialize.scss" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" />
+        <script src="materialize/js/jquery-3.1.1.js"></script>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="animate.css">
+		
+	</head>
+	<body>
+		
+		<div id="errorMessages">
+		</div>
+	
+		<div class = "form">	
+			
+			<input type="text" id = "username" placeholder="Username"/>
+			<br></br>
+			<input type="text" id = "name" placeholder="Name"/>
+			<br></br>
+			<input type="password" id = "password1" placeholder="Password"/>
+			<br></br>
+			<input type="password" id = "password2" placeholder="Again password"/>
+			<br></br>
+			<button id = "register" >Register</button>
+			<br></br>
+			<a href="/login/">I want to login</a>
+		</div>	
+	
+		<script>
+		$("#register").click(function(){
+			
+			var name = $("#name").val();
+			if (name == ""){
+				$("#errorMessages").html("Please Enter Name");
+				return;
+			}
+			
+			var username = $("#username").val();
+			if (username == ""){
+				$("#errorMessages").html("Please Enter Username");
+				return;
+			}
+			
+			var password1 = $("#password1").val();
+			if (password1.length == 0){
+				$("#errorMessages").html("Please Enter Password");
+				return;
+			}
+			
+			var password2 = $("#password2").val();
+			if (password2.length == 0){
+				$("#errorMessages").html("Please Repeat your Password");
+				return;
+			}
+			
+			if (password1 != password2){
+				$("#errorMessages").html("Please Enter Password Correctly");
+				return;
+			}
+			
+			var message = username + " " + name + " " + password1;
+			
+			console.log(message);
+			
+			$.ajax({ 	
+				method :  "post",
+    			url  :  "ServletConnection",
+    			data: {signup: message},
+    			success: function(data){
+    				console.log("I handled your response");
+    				console.log(data);
+    				
+    				$("#errorMessages").html(data);
+   				}	
+			});
+			
+	});
+			
+			
+			
+		</script>
+	
+	
+	</body>
+
+
+
+
+
+
+</html>
