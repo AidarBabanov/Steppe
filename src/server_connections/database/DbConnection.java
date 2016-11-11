@@ -24,8 +24,7 @@ public class DbConnection {
 		List<String> result = new ArrayList<String>();
 
 		try {
-			rs = st.executeQuery(
-					"Select p.idPlace, p.latitude, p.longitude, p.name, p.description, p.photo, q.idQuestion, q.question from place as p join question as q on p.idPlace=q.idPlace order by rand() limit 1;  ");
+			rs = st.executeQuery("select * from question order by rand() limit 1;");
 			while (rs.next()) {
 				result.add(rs.getString("latitude"));
 				result.add(rs.getString("longitude"));
@@ -33,30 +32,39 @@ public class DbConnection {
 				result.add(rs.getString("description"));
 				result.add(rs.getString("name"));
 				result.add(rs.getString("photo"));
-				result.add(rs.getString("idPlace"));
 				result.add(rs.getString("idQuestion"));
 
 			}
 		} catch (SQLException e) {
-			System.out.println(e);
+			System.out.println(e.getMessage());
 		}
 
 		return result;
 	}
 
 	public void SignUp(String login, String name, String password) throws SQLException {
-
 		st.executeUpdate("insert into user values ('" + login + "', '" + name + "', '" + password + "');");
-
 	}
 
 	public boolean SignIn(String login, String password) throws SQLException {
-
 		rs = st.executeQuery("Select * from user where login='" + login + "' and password='" + password + "';");
-
 		if (!rs.next()) {
 			return false;
 		}
 		return true;
+	}
+
+	public List<String[]> getListOfTopics(String userLogin) {
+		List<String[]>result = new ArrayList<String[]>();
+		try {
+			rs = st.executeQuery("select idTopic, name from topic where userLogin='"+userLogin+"';");
+			while (rs.next()) {
+				String s[]={rs.getString("idTopic"), rs.getString("name")};
+				result.add(s);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return result;
 	}
 }

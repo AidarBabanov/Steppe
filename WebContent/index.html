@@ -169,7 +169,7 @@
             
             function changeQuestion(){
                 //SOME AJAX FUNCTION
-                 $.post("ServletConnection", {skip:" "}, function(d){
+                 $.post("ServletConnection", {skip:""}, function(d){
                			var items = $.parseJSON(d);
                			
                			rightAnswer.lat = parseFloat(items[0]);

@@ -5,6 +5,7 @@ import server_connections.database.DbConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -24,6 +25,7 @@ import com.google.gson.Gson;
 public class ServletConnection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	DbConnection db;
+	HttpSession session;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -53,7 +55,7 @@ public class ServletConnection extends HttpServlet {
 		System.out.println("Servlet connected.");
 
 		if (m.containsKey("skip")) {
-			PrintWriter out = response.getWriter();
+			System.out.println("Skip function.");
 			List<String> result;
 			result = db.getQuestion();
 			Gson gson = new Gson();
@@ -61,16 +63,15 @@ public class ServletConnection extends HttpServlet {
 			response.getWriter().append(json);
 		}
 
-
-		if (m.containsKey("signup")) {
-			String[] user = m.get("signup")[0].split(" ");
+		if (m.containsKey("signup[]")) {
+			System.out.println("Sign Up ");
+			String[] user = m.get("signup[]");
 			String result;
 			try {
 
 				db.SignUp(user[0], user[1], user[2]);
 				result = "Signed Up Succesfully!";
 			} catch (SQLException e) {
-				// gavno
 				result = "Signed Up not Succesfully!";
 
 			}
@@ -78,31 +79,30 @@ public class ServletConnection extends HttpServlet {
 			String json = gson.toJson(result);
 			response.getWriter().append(json);
 		}
-	
-		
-	if (m.containsKey("signin")) {
-		String[] user = m.get("signin")[0].split(" ");
-		String result;
-		try {
-			//System.out.println(user[0]);
-			boolean isSignedIn=db.SignIn(user[0], user[1]);
-			if(isSignedIn){	
-				result = "Signed In Succesfully!";
-//				HttpSession s =  request.getSession();
-//				s.setAttribute(user[0], user[1]);
-			}
-			else result = "Signed In not Succesfully!";
-		
-		
-		} catch (SQLException e) {
-			// gavno
-			//System.out.println("!!!");
-			result = "Signed In not Succesfully!";
 
+		if (m.containsKey("signin[]")) {
+			String[] user = m.get("signin[]");
+			String result;
+			try {
+				boolean isSignedIn = db.SignIn(user[0], user[1]);
+				if (isSignedIn) {
+					result = "ok";
+					session = request.getSession();
+					session.setAttribute("login", user[0]);
+				} else
+					result = "not ok";
+
+			} catch (SQLException e) {
+				result = "not ok";
+
+			}
+			Gson gson = new Gson();
+			String json = gson.toJson(result);
+			response.getWriter().append(json);
 		}
-		Gson gson = new Gson();
-		String json = gson.toJson(result);
-		response.getWriter().append(json);
+		if (m.containsKey("getLisOfTopics")){
+			List<String[]> result = db.getListOfTopics(m.get("getLisOfTopics")[0]);
+			response.getWriter().append(new Gson().toJson(result));
+		}
 	}
-}
 }
